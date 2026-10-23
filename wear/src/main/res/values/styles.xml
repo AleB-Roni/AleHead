@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Hud" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <!-- Kein versehentliches Wegwischen während der Fahrt -->
+        <item name="android:windowSwipeToDismiss">false</item>
+    </style>
+</resources>
