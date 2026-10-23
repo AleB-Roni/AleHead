@@ -1,6 +1,8 @@
 package de.roni.alehead
 
 import android.app.Notification
+import android.content.ComponentName
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
@@ -23,6 +25,23 @@ class NavListenerService : NotificationListenerService() {
         const val MAPS = "com.google.android.apps.maps"
         private val DIST = Regex("""(\d+(?:[.,]\d+)?)\s?(km|m|mi|ft)(?![a-zA-ZäöüÄÖÜ])""", RegexOption.IGNORE_CASE)
         private val LEADING = Regex("""^\s*(in|nach|after)\s+""", RegexOption.IGNORE_CASE)
+
+        @Volatile private var instance: NavListenerService? = null
+
+        /**
+         * Schaltet das Mitlesen ein/aus. Aus = das System entbindet den Dienst komplett,
+         * es kommen keine Benachrichtigungen mehr an (spart Akku, solange nicht gefahren wird).
+         */
+        fun setEnabled(ctx: Context, on: Boolean) {
+            try {
+                if (on) {
+                    NotificationListenerService.requestRebind(ComponentName(ctx.applicationContext, NavListenerService::class.java))
+                } else {
+                    instance?.requestUnbind()
+                }
+            } catch (_: Exception) {
+            }
+        }
     }
 
     private var navKey: String? = null
@@ -40,10 +59,25 @@ class NavListenerService : NotificationListenerService() {
     }
 
     override fun onListenerConnected() {
+        instance = this
+        if (!HudService.active) {
+            // Keine Fahrt aktiv → sofort wieder schlafen legen.
+            try {
+                requestUnbind()
+            } catch (_: Exception) {
+            }
+            return
+        }
         try {
             activeNotifications?.forEach { handle(it) }
         } catch (_: Exception) {
         }
+    }
+
+    override fun onListenerDisconnected() {
+        if (instance === this) instance = null
+        navKey = null
+        handler.removeCallbacks(heartbeat)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
@@ -60,7 +94,7 @@ class NavListenerService : NotificationListenerService() {
     }
 
     private fun handle(sbn: StatusBarNotification) {
-        if (sbn.packageName != MAPS) return
+        if (sbn.packageName != MAPS || !HudService.active) return
         val n = sbn.notification ?: return
         val ex = n.extras
         val title = ex.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty().trim()

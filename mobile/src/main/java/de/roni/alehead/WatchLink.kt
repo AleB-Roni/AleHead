@@ -1,6 +1,9 @@
 package de.roni.alehead
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.wear.remote.interactions.RemoteActivityHelper
 import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.Wearable
 import org.json.JSONObject
@@ -9,6 +12,8 @@ import org.json.JSONObject
 object WatchLink {
     const val PATH_STATE = "/alehead/state"
     const val PATH_ICON = "/alehead/icon"
+    const val PATH_OPEN = "/alehead/open"
+    const val PATH_CLOSE = "/alehead/close"
 
     private var nodes: List<Node> = emptyList()
     private var nodesAt = 0L
@@ -38,6 +43,36 @@ object WatchLink {
                 if (withIcon && icon != null) mc.sendMessage(n.id, PATH_ICON, icon)
                 mc.sendMessage(n.id, PATH_STATE, data)
             }
+        }
+    }
+
+    /** Öffnet die AleHead-App auf der Uhr. */
+    fun openOnWatch(ctx: Context) {
+        val app = ctx.applicationContext
+        nodesAt = 0
+        withNodes(app) { list ->
+            val mc = Wearable.getMessageClient(app)
+            for (n in list) {
+                // Weg 1: Nachricht an den Listener-Dienst der Uhr (klappt bei Wear OS 2 zuverlässig)
+                mc.sendMessage(n.id, PATH_OPEN, ByteArray(0))
+                // Weg 2: offizieller Remote-Start (für neuere Wear-OS-Versionen)
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                        .addCategory(Intent.CATEGORY_BROWSABLE)
+                        .setData(Uri.parse("alehead://hud"))
+                    RemoteActivityHelper(app).startRemoteActivity(intent, n.id)
+                } catch (_: Exception) {
+                }
+            }
+        }
+    }
+
+    /** Schließt die AleHead-App auf der Uhr. */
+    fun closeOnWatch(ctx: Context) {
+        val app = ctx.applicationContext
+        withNodes(app) { list ->
+            val mc = Wearable.getMessageClient(app)
+            for (n in list) mc.sendMessage(n.id, PATH_CLOSE, ByteArray(0))
         }
     }
 

@@ -31,13 +31,20 @@ Nach Code-Änderungen einfach wieder 1. und 2.
 
 ## Erster Start
 
-1. Handy-App **AleHead** öffnen → „Benachrichtigungszugriff erlauben" → AleHead aktivieren.
-2. „Standort & Benachrichtigungen erlauben".
-3. Uhr-App **AleHead** öffnen.
-4. Am Handy **„Testanzeige an Uhr senden"** → auf der Uhr erscheint 15 s lang eine Fake-Navigation. Funktioniert das, steht die Verbindung.
-5. **„HUD starten"** → ab jetzt Tempo + Tempolimit. Navigation in Google Maps starten → Pfeil und Distanz erscheinen.
+1. Handy-App **AleHead** öffnen. Die Karte **Einrichtung** zeigt, was noch fehlt – bei jedem Punkt auf „Erlauben" tippen:
+   Benachrichtigungszugriff, Standort, Standort „Immer erlauben", Bluetooth, Akku nicht einschränken.
+   Sobald alles erledigt ist, blendet sich die Karte aus.
+2. Unter **Automatik** die **Head Unit** auswählen (das Bluetooth-Gerät deiner Android-Auto-Box).
+3. **„Test an Uhr"** antippen → die Uhr-App öffnet sich und zeigt 15 s lang eine Fake-Navigation.
 
-**Samsung-Tipp:** Einstellungen → Apps → AleHead → Akku → **„Nicht eingeschränkt"**, sonst beendet One UI den Dienst im Hintergrund.
+## Automatik: läuft nur mit Android Auto
+
+- Verbindet sich die Head Unit per Bluetooth, startet AleHead im Hintergrund und wartet bis zu 2 Minuten auf Android Auto.
+- Sobald Android Auto verbunden ist: GPS, Tempolimit und Maps-Auslesen starten, die Uhr-App öffnet sich von selbst.
+- Wird Android Auto getrennt: alles stoppt, das Maps-Auslesen wird vom System komplett entbunden, die Uhr-App blendet sich aus und schließt sich.
+- Kommt nach 2 Minuten kein Android Auto (z. B. nur Kopfhörer verbunden), beendet sich der Dienst wieder.
+- Ohne Fahrt läuft also nichts – kein GPS, kein Dienst, keine Benachrichtigung.
+- Zum Testen ohne Auto gibt es weiterhin **„Jetzt starten"**.
 
 ## Der wichtigste Test: Funktioniert es mit Android Auto?
 
@@ -59,7 +66,7 @@ Steht dort eine aktuelle Uhrzeit mit `title`/`text` von Maps, klappt alles. Blei
 
 | Pfad | Inhalt |
 |---|---|
-| `mobile/` | Handy-App: `NavListenerService` (Maps auslesen), `HudService` (GPS + Tempolimit), `WatchLink` (Senden an Uhr), `MainActivity` (Einrichtung + Debug) |
-| `wear/` | Uhr-App: `HudActivity` (Empfang), `HudView` (Zeichnen) |
+| `mobile/` | Handy-App: `BtReceiver` (Bluetooth-Trigger), `HudService` (Android-Auto-Erkennung, GPS, Tempolimit), `NavListenerService` (Maps auslesen), `WatchLink` (Senden an Uhr), `MainActivity`/`Ui.kt`/`HudPreview.kt` (Oberfläche) |
+| `wear/` | Uhr-App: `HudActivity` (Empfang), `HudView` (animierte Anzeige), `OpenListenerService` (öffnet die App bei Fahrtbeginn) |
 | `.github/workflows/build.yml` | Baut beide APKs und veröffentlicht sie als Release „latest" |
 | `Hochladen.bat`, `Installieren.bat` | Doppelklick-Skripte für Windows |

@@ -4,15 +4,28 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Nötig, damit GPS auch startet, wenn der Dienst automatisch im Hintergrund losgeht -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- Bluetooth-Verbindung zur Head Unit erkennen -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <queries>
+        <!-- Android-Auto-App, für die Verbindungserkennung -->
+        <package android:name="com.google.android.projection.gearhead" />
+    </queries>
 
     <application
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="AleHead"
-        android:theme="@android:style/Theme.DeviceDefault">
+        android:theme="@android:style/Theme.Material.NoActionBar">
 
         <activity
             android:name=".MainActivity"
@@ -23,7 +36,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Liest die Navigations-Benachrichtigung von Google Maps -->
+        <!-- Liest die Navigations-Benachrichtigung von Google Maps (nur aktiv, solange das HUD läuft) -->
         <service
             android:name=".NavListenerService"
             android:exported="true"
@@ -34,10 +47,20 @@
             </intent-filter>
         </service>
 
-        <!-- GPS-Tempo + Tempolimit aus OpenStreetMap -->
+        <!-- Läuft nur, solange Android Auto verbunden ist (oder manuell gestartet) -->
         <service
             android:name=".HudService"
             android:exported="false"
-            android:foregroundServiceType="location" />
+            android:foregroundServiceType="location|connectedDevice" />
+
+        <!-- Startet den Dienst, wenn sich die Head Unit per Bluetooth verbindet -->
+        <receiver
+            android:name=".BtReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

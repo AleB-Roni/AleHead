@@ -16,6 +16,9 @@ object HudState {
     @Volatile var limitKmh = -1      // -1 = unbekannt, 0 = kein Limit
     @Volatile var limitRaw = ""      // OSM-Rohwert für Debug
 
+    @Volatile var aaConnected = false
+    @Volatile var warning = ""
+
     @Volatile var lastRaw = "(noch keine Maps-Benachrichtigung gesehen)"
     @Volatile var watchName = ""
 
@@ -26,6 +29,15 @@ object HudState {
         secondary = ""
         info = ""
         icon = null
+    }
+
+    fun clearAll() {
+        clearNav()
+        speedKmh = -1
+        limitKmh = -1
+        limitRaw = ""
+        aaConnected = false
+        warning = ""
     }
 
     fun toJson(ctx: Context): JSONObject {
@@ -49,6 +61,7 @@ object HudState {
     } + if (limitRaw.isNotEmpty()) "  (OSM: $limitRaw)" else ""
 
     fun debugText(): String = buildString {
+        append("Android Auto: ").append(if (aaConnected) "verbunden" else "nicht verbunden").append('\n')
         append("Navigation aktiv: ").append(if (navActive) "ja" else "nein").append('\n')
         append("Distanz: ").append(distance.ifEmpty { "–" }).append('\n')
         append("Zeile 1: ").append(primary.ifEmpty { "–" }).append('\n')
@@ -72,4 +85,18 @@ class Prefs(ctx: Context) {
     var tolerance: Int
         get() = sp.getInt("tol", 5)
         set(v) = sp.edit().putInt("tol", v).apply()
+
+    /** Automatisch mit Android Auto starten/stoppen. */
+    var autoMode: Boolean
+        get() = sp.getBoolean("auto", true)
+        set(v) = sp.edit().putBoolean("auto", v).apply()
+
+    /** MAC-Adresse der Head Unit (leer = jedes Bluetooth-Gerät löst die Prüfung aus). */
+    var btAddress: String
+        get() = sp.getString("btAddr", "").orEmpty()
+        set(v) = sp.edit().putString("btAddr", v).apply()
+
+    var btName: String
+        get() = sp.getString("btName", "").orEmpty()
+        set(v) = sp.edit().putString("btName", v).apply()
 }

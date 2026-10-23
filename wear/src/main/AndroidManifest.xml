@@ -23,6 +23,26 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Damit das Handy die App per RemoteActivityHelper öffnen kann -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="alehead" android:host="hud" />
+            </intent-filter>
         </activity>
+
+        <!-- Öffnet die App, wenn das Handy "Android Auto verbunden" meldet -->
+        <service
+            android:name=".OpenListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/alehead/open"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

@@ -24,6 +24,7 @@ object TestMode {
         if (active) return
         active = true
         step = 0
+        WatchLink.openOnWatch(app)
         val arrow = arrowPng()
         handler.post(object : Runnable {
             override fun run() {
