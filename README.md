@@ -46,6 +46,16 @@ Nach Code-Änderungen einfach wieder 1. und 2.
 - Ohne Fahrt läuft also nichts – kein GPS, kein Dienst, keine Benachrichtigung.
 - Zum Testen ohne Auto gibt es weiterhin **„Jetzt starten"**.
 
+### Display der Uhr nur bei laufendem Auto
+
+- **Fahrtbeginn:** Die Uhr-App öffnet sich und schaltet das Display ein, auch wenn die Uhr gerade aus war.
+- **Android Auto getrennt:** Die Anzeige blendet sich aus, die App schließt sich, das Display geht aus.
+- **Handy außer Reichweite** (Bluetooth-Verbindung weg): nach ca. 10 s aus.
+- **Keine Daten mehr vom Handy** (z. B. Handy-Akku leer, App beendet): nach 20 s aus.
+- `Installieren.bat` schaltet AleHead als **Geräteadministrator** frei, nur mit dem Recht „Display sperren“. Dann geht das Display sofort aus. Klappt das bei deiner Uhr nicht, geht es nach der normalen Display-Zeitüberschreitung aus.
+- Auf der Uhr unter Einstellungen → Display **„Display immer an“ ausschalten**, sonst bleibt danach das gedimmte Zifferblatt sichtbar.
+- Uhr-App deinstallieren: vorher `adb shell dpm remove-active-admin de.roni.alehead/.AdminReceiver` ausführen.
+
 ## Der wichtigste Test: Funktioniert es mit Android Auto?
 
 Unklar ist, ob Google Maps die Navigations-Benachrichtigung auch postet, während es auf Android Auto läuft. Prüfen:
@@ -67,6 +77,6 @@ Steht dort eine aktuelle Uhrzeit mit `title`/`text` von Maps, klappt alles. Blei
 | Pfad | Inhalt |
 |---|---|
 | `mobile/` | Handy-App: `BtReceiver` (Bluetooth-Trigger), `HudService` (Android-Auto-Erkennung, GPS, Tempolimit), `NavListenerService` (Maps auslesen), `WatchLink` (Senden an Uhr), `MainActivity`/`Ui.kt`/`HudPreview.kt` (Oberfläche) |
-| `wear/` | Uhr-App: `HudActivity` (Empfang), `HudView` (animierte Anzeige), `OpenListenerService` (öffnet die App bei Fahrtbeginn) |
+| `wear/` | Uhr-App: `HudActivity` (Empfang), `HudView` (animierte Anzeige), `OpenListenerService` (öffnet die App bei Fahrtbeginn), `AdminReceiver` (Display aus) |
 | `.github/workflows/build.yml` | Baut beide APKs und veröffentlicht sie als Release „latest" |
 | `Hochladen.bat`, `Installieren.bat` | Doppelklick-Skripte für Windows |

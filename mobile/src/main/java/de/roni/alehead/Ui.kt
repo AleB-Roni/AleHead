@@ -255,7 +255,7 @@ fun AleHeadScreen(s: Snap, icon: ImageBitmap?, a: Actions) {
             DebugCard(s.debug, showDebug) { showDebug = !showDebug }
 
             Text(
-                "AleHead 0.2",
+                "AleHead 0.3",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.align(Alignment.CenterHorizontally)

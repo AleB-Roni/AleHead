@@ -80,7 +80,13 @@ if ($wahl -eq '2' -or $wahl -eq '3') {
     Write-Host 'Falls auf der Uhr eine Abfrage erscheint: "Immer erlauben" antippen.'
     Start-Sleep -Seconds 3
     & $adb -s $addr install -r $watchApk
-    if ($LASTEXITCODE -eq 0) { Write-Host 'Uhr-App installiert.' -ForegroundColor Green }
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host 'Uhr-App installiert.' -ForegroundColor Green
+        # Erlaubt AleHead, das Display nach der Fahrt sofort auszuschalten (nur Recht "Display sperren")
+        & $adb -s $addr shell dpm set-active-admin de.roni.alehead/.AdminReceiver 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) { Write-Host 'Display-Abschaltung freigeschaltet.' -ForegroundColor Green }
+        else { Write-Host 'Display-Abschaltung nicht moeglich - Display geht dann nach der normalen Zeitueberschreitung aus.' -ForegroundColor Yellow }
+    }
     else { Write-Host 'Installation auf der Uhr fehlgeschlagen - Adresse und ADB-Debugging pruefen.' -ForegroundColor Red }
     & $adb disconnect $addr | Out-Null
 }

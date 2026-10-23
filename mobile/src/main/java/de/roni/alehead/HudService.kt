@@ -63,6 +63,16 @@ class HudService : Service(), LocationListener {
 
     private val giveUp = Runnable { if (!active) stopSelf() }
 
+    // Solange die Fahrt läuft, alle 2 s ein Lebenszeichen an die Uhr – auch ohne GPS (Tunnel, Tiefgarage).
+    // Bleibt es aus (Handy weg / Akku leer), schaltet die Uhr ihr Display selbst ab.
+    private val heartbeat = object : Runnable {
+        override fun run() {
+            if (!active) return
+            WatchLink.publish(this@HudService)
+            handler.postDelayed(this, 2000)
+        }
+    }
+
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -124,6 +134,8 @@ class HudService : Service(), LocationListener {
         NavListenerService.setEnabled(this, true)
         WatchLink.openOnWatch(this)
         WatchLink.publish(this)
+        handler.removeCallbacks(heartbeat)
+        handler.postDelayed(heartbeat, 2000)
     }
 
     /** @return true, wenn der Dienst mit Standort-Typ laufen darf. */

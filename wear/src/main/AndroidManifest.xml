@@ -44,5 +44,19 @@
                     android:scheme="wear" />
             </intent-filter>
         </service>
+
+        <!-- Optional: erlaubt, das Display nach der Fahrt sofort auszuschalten -->
+        <receiver
+            android:name=".AdminReceiver"
+            android:exported="true"
+            android:label="AleHead"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
