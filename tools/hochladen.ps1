@@ -71,6 +71,13 @@ if ($LASTEXITCODE -ne 0) {
     Write-Host 'Keine neuen Aenderungen - pushe trotzdem.'
 }
 
+# Erst Aenderungen von GitHub holen (z. B. wenn Claude direkt gepusht hat)
+git pull --rebase origin main
+if ($LASTEXITCODE -ne 0) {
+    Write-Host 'Konnte Aenderungen von GitHub nicht zusammenfuehren. Bitte melde dich bei Claude.' -ForegroundColor Red
+    Fertig 1
+}
+
 git push -u origin main
 if ($LASTEXITCODE -ne 0) {
     Write-Host 'Push fehlgeschlagen. Beim ersten Mal oeffnet sich evtl. ein GitHub-Login-Fenster - danach nochmal starten.' -ForegroundColor Red
