@@ -24,10 +24,21 @@ OpenStreetMap ──Tempolimit─────────────┘
 
 ## Bauen & installieren
 
-1. **`Hochladen.bat`** doppelklicken → lädt das Projekt nach GitHub, GitHub Actions baut beide Apps (3–5 Minuten).
-2. **`Installieren.bat`** doppelklicken → lädt die APKs herunter, installiert die Handy-App per USB und die Uhr-App per WLAN. adb wird bei Bedarf automatisch heruntergeladen.
+**`AleHead.bat`** doppelklicken → Menü:
 
-Nach Code-Änderungen einfach wieder 1. und 2.
+| Taste | Funktion |
+|---|---|
+| **1** | **Alles:** hochladen, auf den GitHub-Build warten, Handy und/oder Uhr installieren |
+| 2 | Neueste Version von GitHub holen (z. B. nachdem Claude etwas geändert hat) |
+| 3 | Nur hochladen |
+| 4 / 5 | Nur installieren: Handy (USB) / Uhr (WLAN) |
+| 6 | Screenshot von der Uhr (landet im Ordner `screenshots`) |
+| 7 | Uhr-App starten (zum Testen) |
+| 8 | „Display immer an“ auf der Uhr ausschalten (öffnet die Einstellung auf der Uhr) |
+| 9 | Sofortige Display-Abschaltung erneut freischalten |
+| D | Deinstallieren (entfernt vorher automatisch das Admin-Recht auf der Uhr) |
+
+adb wird bei Bedarf automatisch von Google heruntergeladen, die Adresse der Uhr wird gespeichert.
 
 ## Erster Start
 
@@ -52,9 +63,9 @@ Nach Code-Änderungen einfach wieder 1. und 2.
 - **Android Auto getrennt:** Die Anzeige blendet sich aus, die App schließt sich, das Display geht aus.
 - **Handy außer Reichweite** (Bluetooth-Verbindung weg): nach ca. 10 s aus.
 - **Keine Daten mehr vom Handy** (z. B. Handy-Akku leer, App beendet): nach 20 s aus.
-- `Installieren.bat` schaltet AleHead als **Geräteadministrator** frei, nur mit dem Recht „Display sperren“. Dann geht das Display sofort aus. Klappt das bei deiner Uhr nicht, geht es nach der normalen Display-Zeitüberschreitung aus.
+- Die Uhr-Installation in `AleHead.bat` schaltet AleHead als **Geräteadministrator** frei, nur mit dem Recht „Display sperren“. Dann geht das Display sofort aus. Klappt das bei deiner Uhr nicht, geht es nach der normalen Display-Zeitüberschreitung aus.
 - Auf der Uhr unter Einstellungen → Display **„Display immer an“ ausschalten**, sonst bleibt danach das gedimmte Zifferblatt sichtbar.
-- Uhr-App deinstallieren: vorher `adb shell dpm remove-active-admin de.roni.alehead/.AdminReceiver` ausführen.
+- Uhr-App deinstallieren: in `AleHead.bat` Taste **D** (entfernt das Admin-Recht automatisch).
 
 ## Der wichtigste Test: Funktioniert es mit Android Auto?
 
@@ -79,4 +90,4 @@ Steht dort eine aktuelle Uhrzeit mit `title`/`text` von Maps, klappt alles. Blei
 | `mobile/` | Handy-App: `BtReceiver` (Bluetooth-Trigger), `HudService` (Android-Auto-Erkennung, GPS, Tempolimit), `NavListenerService` (Maps auslesen), `WatchLink` (Senden an Uhr), `MainActivity`/`Ui.kt`/`HudPreview.kt` (Oberfläche) |
 | `wear/` | Uhr-App: `HudActivity` (Empfang), `HudView` (animierte Anzeige), `OpenListenerService` (öffnet die App bei Fahrtbeginn), `AdminReceiver` (Display aus) |
 | `.github/workflows/build.yml` | Baut beide APKs und veröffentlicht sie als Release „latest" |
-| `Hochladen.bat`, `Installieren.bat` | Doppelklick-Skripte für Windows |
+| `AleHead.bat` → `tools/alehead.ps1` | Menü für Windows (hochladen, installieren, Screenshot, Deinstallieren …) |

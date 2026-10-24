@@ -1,12 +1,15 @@
-# AleHead nach GitHub hochladen (wird von "Hochladen.bat" gestartet)
+# AleHead nach GitHub hochladen (wird vom Menue in "AleHead.bat" gestartet)
+param([switch]$NoPause)
 $ErrorActionPreference = 'Continue'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
 $repoName = 'AleHead'
 
 function Fertig($code) {
-    Write-Host ''
-    Read-Host 'Enter druecken zum Schliessen'
+    if (-not $NoPause) {
+        Write-Host ''
+        Read-Host 'Enter druecken zum Schliessen'
+    }
     exit $code
 }
 
@@ -88,6 +91,5 @@ $web = $remote -replace '\.git$', ''
 Write-Host ''
 Write-Host 'Hochgeladen! GitHub baut die Apps jetzt (dauert ca. 3-5 Minuten):' -ForegroundColor Green
 Write-Host "   $web/actions"
-Write-Host 'Danach "Installieren.bat" starten.'
-Start-Process "$web/actions"
+if (-not $NoPause) { Start-Process "$web/actions" }
 Fertig 0

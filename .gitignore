@@ -6,3 +6,5 @@ local.properties
 apks/
 platform-tools/
 tools/uhr-adresse.txt
+screenshots/
+Update-einmalig.bat
